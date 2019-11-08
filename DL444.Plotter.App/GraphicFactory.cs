@@ -1,10 +1,6 @@
 ﻿using DL444.Plotter.App.ViewModels;
 using DL444.Plotter.Library;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DL444.Plotter.App
 {
@@ -45,10 +41,10 @@ namespace DL444.Plotter.App
 
     internal enum GraphicType
     {
-        Point = 00, 
-        DdaLine = 10, MidpointLine = 11, BresenhamLine = 12, 
-        MidpointCircle = 20, BresenhamCircle = 21, 
-        MidpointEllipse = 30, 
+        Point = 00,
+        DdaLine = 10, MidpointLine = 11, BresenhamLine = 12,
+        MidpointCircle = 20, BresenhamCircle = 21,
+        MidpointEllipse = 30,
         ScanlinePolygon = 40,
         GraphicsGroup = 50
     }

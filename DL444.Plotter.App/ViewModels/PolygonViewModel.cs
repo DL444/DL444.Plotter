@@ -1,10 +1,7 @@
-﻿using System;
+﻿using DL444.Plotter.Library;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DL444.Plotter.Library;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Shapes;
 

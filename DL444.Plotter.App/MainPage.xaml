@@ -185,12 +185,13 @@
                 <AppBarButton.Flyout>
                     <Flyout x:Name="clearCanvasFlyout">
                         <StackPanel Spacing="16">
-                            <TextBlock Text="This will remove all graphics from the canvas."/>
+                            <TextBlock Text="This will remove everything from the canvas."/>
                             <Button Content="OK" HorizontalAlignment="Right" MinWidth="64" Click="ClearButton_Click" Tag="{x:Bind clearCanvasFlyout}"/>
                         </StackPanel>
                     </Flyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
+            <AppBarButton Icon="Undo" Label="Undo" Visibility="{x:Bind AppState.UndoButtonVisibility, Mode=OneWay}" IsEnabled="{x:Bind AppState.CanUndo, Mode=OneWay}" Click="UndoButton_Click"/>
             <AppBarButton Icon="Accept" Label="Confirm" Visibility="{x:Bind AppState.ConfirmButtonVisibility, Mode=OneWay}" Click="ConfirmAddition_Click"/>
             <AppBarButton Icon="Cancel" Label="Cancel" Visibility="{x:Bind AppState.CancelButtonVisibility, Mode=OneWay}" Click="CancelAddition_Click"/>
         </CommandBar>

@@ -165,7 +165,7 @@ namespace DL444.Plotter.Library
                 else if (disD > 0)
                 {
                     int dIntersect = 2 * (disD - x) - 1;
-                    selection = dIntersect < 0 ? PointSelection.DownRight: PointSelection.Down;
+                    selection = dIntersect < 0 ? PointSelection.DownRight : PointSelection.Down;
                 }
                 else
                 {

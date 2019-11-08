@@ -1,13 +1,6 @@
 ﻿using DL444.Plotter.App.ViewModels;
 using DL444.Plotter.Library;
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
@@ -22,12 +15,15 @@ namespace DL444.Plotter.App
         Visibility ClearButtonVisibility { get; }
         Visibility ConfirmButtonVisibility { get; }
         Visibility CancelButtonVisibility { get; }
+        Visibility UndoButtonVisibility { get; }
+        bool CanUndo { get; }
 
         IAppState Add(GraphicType type);
         IAppState MouseOver(int x, int y);
         IAppState Click(int x, int y);
         IAppState Confirm();
         IAppState Cancel();
+        IAppState Undo();
     }
 
     internal sealed class ReadyState : IAppState
@@ -44,6 +40,8 @@ namespace DL444.Plotter.App
         public Visibility ClearButtonVisibility => Visibility.Visible;
         public Visibility ConfirmButtonVisibility => Visibility.Collapsed;
         public Visibility CancelButtonVisibility => Visibility.Collapsed;
+        public Visibility UndoButtonVisibility => Visibility.Collapsed;
+        public bool CanUndo => false;
 
         public IAppState Add(GraphicType type)
         {
@@ -68,6 +66,7 @@ namespace DL444.Plotter.App
         public IAppState Click(int x, int y) => this;
         public IAppState Confirm() => this;
         public IAppState MouseOver(int x, int y) => this;
+        public IAppState Undo() => this;
 
         private GridCanvas canvas;
         private GraphicFactory factory;
@@ -94,6 +93,8 @@ namespace DL444.Plotter.App
         public Visibility ClearButtonVisibility => Visibility.Collapsed;
         public Visibility ConfirmButtonVisibility => Visibility.Collapsed;
         public Visibility CancelButtonVisibility => Visibility.Visible;
+        public Visibility UndoButtonVisibility => Visibility.Visible;
+        public bool CanUndo => p0Set;
 
         public Point Point0
         {
@@ -159,6 +160,16 @@ namespace DL444.Plotter.App
             }
             return this;
         }
+        public IAppState Undo()
+        {
+            if (p0Set)
+            {
+                p0Set = false;
+                canvas.PreviewShape = null;
+                previewShapeAdded = false;
+            }
+            return this;
+        }
 
         private GridCanvas canvas;
         private Line previewLine;
@@ -191,9 +202,11 @@ namespace DL444.Plotter.App
         public Visibility ClearButtonVisibility => Visibility.Collapsed;
         public Visibility ConfirmButtonVisibility => Visibility.Collapsed;
         public Visibility CancelButtonVisibility => Visibility.Visible;
+        public Visibility UndoButtonVisibility => Visibility.Visible;
+        public bool CanUndo => centerSet;
 
-        public Point Center 
-        { 
+        public Point Center
+        {
             get => center;
             private set
             {
@@ -251,6 +264,16 @@ namespace DL444.Plotter.App
             else
             {
                 Center = new Point(x, y);
+            }
+            return this;
+        }
+        public IAppState Undo()
+        {
+            if (centerSet)
+            {
+                centerSet = false;
+                canvas.PreviewShape = null;
+                previewShapeAdded = false;
             }
             return this;
         }
@@ -315,6 +338,8 @@ namespace DL444.Plotter.App
         public Visibility ClearButtonVisibility => Visibility.Collapsed;
         public Visibility ConfirmButtonVisibility => Visibility.Collapsed;
         public Visibility CancelButtonVisibility => Visibility.Visible;
+        public Visibility UndoButtonVisibility => Visibility.Visible;
+        public bool CanUndo => centerSet || aSet;
 
         public Point Center
         {
@@ -399,6 +424,21 @@ namespace DL444.Plotter.App
             }
             return this;
         }
+        public IAppState Undo()
+        {
+            if (aSet)
+            {
+                aSet = false;
+                B = 0;
+                canvas.PreviewShape = null;
+                previewShapeAdded = false;
+            }
+            else if (centerSet)
+            {
+                centerSet = false;
+            }
+            return this;
+        }
 
         private void SetPreviewEllipseSizePosition(int a, int b, Point center)
         {
@@ -442,6 +482,8 @@ namespace DL444.Plotter.App
         public Visibility ClearButtonVisibility => Visibility.Collapsed;
         public Visibility ConfirmButtonVisibility => Visibility.Visible;
         public Visibility CancelButtonVisibility => Visibility.Visible;
+        public Visibility UndoButtonVisibility => Visibility.Visible;
+        public bool CanUndo => polygon.Count > 0;
 
         public IAppState Add(GraphicType type) => this;
         public IAppState Cancel()
@@ -474,6 +516,20 @@ namespace DL444.Plotter.App
             previewPolygon.Points.Add(new Windows.Foundation.Point(x, CoordinateHelper.GetMirroredY(y, canvas.VerticalResolution)));
             return this;
         }
+        public IAppState Undo()
+        {
+            if (polygon.Count > 0)
+            {
+                polygon.RemoveAt(polygon.Count - 1);
+                if (pSet)
+                {
+                    previewPolygon.Points.RemoveAt(previewPolygon.Points.Count - 1);
+                }
+                previewPolygon.Points.RemoveAt(previewPolygon.Points.Count - 1);
+                pSet = false;
+            }
+            return this;
+        }
 
         private GridCanvas canvas;
         private Polygon previewPolygon;
@@ -503,6 +559,8 @@ namespace DL444.Plotter.App
         public Visibility ClearButtonVisibility => Visibility.Collapsed;
         public Visibility ConfirmButtonVisibility => Visibility.Collapsed;
         public Visibility CancelButtonVisibility => Visibility.Visible;
+        public Visibility UndoButtonVisibility => Visibility.Visible;
+        public bool CanUndo => p0Set;
 
         public Point Point0
         {
@@ -562,6 +620,16 @@ namespace DL444.Plotter.App
             else
             {
                 Point0 = new Point(x, y);
+            }
+            return this;
+        }
+        public IAppState Undo()
+        {
+            if (p0Set)
+            {
+                p0Set = false;
+                canvas.PreviewShape = null;
+                previewShapeAdded = false;
             }
             return this;
         }

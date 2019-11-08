@@ -143,14 +143,14 @@ namespace DL444.Plotter.Library
             List<BucketNode> nodes = new List<BucketNode>();
             (int minY, int maxY) = this.MinMax(x => x.Y);
 
-            for (int y = minY; y <= maxY; )
+            for (int y = minY; y <= maxY;)
             {
                 if (buckets[y - minY].Count != 0)
                 {
                     nodes.AddRange(buckets[y - minY]);
                     nodes.Sort();
                 }
-                for (int i = 0; i < nodes.Count; i+= 2)
+                for (int i = 0; i < nodes.Count; i += 2)
                 {
                     int x0 = (int)Math.Round(nodes[i].X);
                     int x1 = (int)Math.Round(nodes[i + 1].X);

@@ -55,7 +55,7 @@ namespace DL444.Plotter.Library
             _frame = new Memory<int>(new int[spanLength]);
             Id = Guid.NewGuid();
         }
-        
+
         public Guid Id { get; }
         public bool Dirty { get; private set; } = true;
 

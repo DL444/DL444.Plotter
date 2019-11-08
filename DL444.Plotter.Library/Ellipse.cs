@@ -27,7 +27,7 @@ namespace DL444.Plotter.Library
         public int A
         {
             get => _a;
-            set 
+            set
             {
                 if (value < 0)
                 {
@@ -59,7 +59,7 @@ namespace DL444.Plotter.Library
         public Point Center
         {
             get => _center;
-            set 
+            set
             {
                 if (Center != value)
                 {
@@ -87,7 +87,15 @@ namespace DL444.Plotter.Library
             if (Dirty)
             {
                 ClearFrame();
-                DrawEx();
+                if (B == 0)
+                {
+
+                    WritableSpan.SetBits(this.GetSpanIndex(Center.X - A, Center.Y), this.GetSpanIndex(Center.X + A + 1, Center.Y), true);
+                }
+                else
+                {
+                    DrawEx();
+                }
                 Dirty = false;
             }
         }
@@ -146,8 +154,8 @@ namespace DL444.Plotter.Library
                 }
             }
 
-            discriminant = B * B * (x + 0.5) * (x + 0.5) 
-                + A * A * (y - 1) * (y - 1) 
+            discriminant = B * B * (x + 0.5) * (x + 0.5)
+                + A * A * (y - 1) * (y - 1)
                 - A * A * B * B;
             while (y >= 0)
             {
