@@ -9,9 +9,9 @@ namespace DL444.Plotter.App.ViewModels
         public LineSegmentViewModel(LineSegmentBase lineSeg)
         {
             LineSegment = lineSeg;
-            refLine = new Line
+            _refLine = new Line
             {
-                StrokeThickness = 0.1,
+                StrokeThickness = (double)Application.Current.Resources["ReferenceShapeStrokeThickness"],
                 Stroke = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ReferenceShapeSolidColorBrush"],
                 X1 = lineSeg.Point0.X,
                 Y1 = CoordinateHelper.GetMirroredY(lineSeg.Point0.Y, Graphic.VerticalResolution),
@@ -30,8 +30,8 @@ namespace DL444.Plotter.App.ViewModels
             {
                 LineSegment.Point0 = value;
                 NotifyPropertyChanged(nameof(Point0));
-                refLine.X1 = value.X;
-                refLine.Y1 = CoordinateHelper.GetMirroredY(value.Y, Graphic.VerticalResolution);
+                _refLine.X1 = value.X;
+                _refLine.Y1 = CoordinateHelper.GetMirroredY(value.Y, Graphic.VerticalResolution);
                 NotifyPropertyChanged(nameof(ReferenceShape));
             }
         }
@@ -42,8 +42,8 @@ namespace DL444.Plotter.App.ViewModels
             {
                 LineSegment.Point1 = value;
                 NotifyPropertyChanged(nameof(Point1));
-                refLine.X2 = value.X;
-                refLine.Y2 = CoordinateHelper.GetMirroredY(value.Y, Graphic.VerticalResolution);
+                _refLine.X2 = value.X;
+                _refLine.Y2 = CoordinateHelper.GetMirroredY(value.Y, Graphic.VerticalResolution);
                 NotifyPropertyChanged(nameof(ReferenceShape));
             }
         }
@@ -60,8 +60,27 @@ namespace DL444.Plotter.App.ViewModels
         }
         public bool Cropped { get; private set; }
 
-        public override Shape ReferenceShape => refLine;
+        public override Shape ReferenceShape => _refLine;
+        public override bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                _isSelected = value;
+                if (IsSelected)
+                {
+                    _refLine.Stroke = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ReferenceShapeHighlightSolidColorBrush"];
+                    _refLine.StrokeThickness = (double)Application.Current.Resources["ReferenceShapeHighlightStrokeThickness"];
+                }
+                else
+                {
+                    _refLine.Stroke = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ReferenceShapeSolidColorBrush"];
+                    _refLine.StrokeThickness = (double)Application.Current.Resources["ReferenceShapeStrokeThickness"];
+                }
+            }
+        }
 
-        private Line refLine;
+        private Line _refLine;
+        private bool _isSelected;
     }
 }

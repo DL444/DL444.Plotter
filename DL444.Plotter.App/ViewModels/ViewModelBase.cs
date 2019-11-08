@@ -9,6 +9,7 @@ namespace DL444.Plotter.App.ViewModels
         public abstract IGraphic Graphic { get; }
 
         public abstract Shape ReferenceShape { get; }
+        public abstract bool IsSelected { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

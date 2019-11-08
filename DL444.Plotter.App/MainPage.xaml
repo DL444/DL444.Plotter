@@ -214,7 +214,7 @@
 
             <TextBlock Text="Graphics" Style="{ThemeResource TitleTextBlockStyle}" Margin="16,0,0,0"/>
             <ListView Grid.Row="1" ItemsSource="{x:Bind canvas.ViewModels}" ItemTemplateSelector="{StaticResource GraphicDataTemplateSelector}" 
-                      SelectionMode="None" IsItemClickEnabled="True">
+                      SelectionMode="None" IsItemClickEnabled="True" ItemClick="ShapeList_ItemClick">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Style.Setters>

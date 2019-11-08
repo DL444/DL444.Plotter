@@ -9,16 +9,34 @@ namespace DL444.Plotter.App.ViewModels
         public CircleViewModel(CircleBase circle)
         {
             Circle = circle;
-            refEllipse = new Ellipse()
+            _refEllipse = new Ellipse()
             {
-                StrokeThickness = 0.1,
+                StrokeThickness = (double)Application.Current.Resources["ReferenceShapeStrokeThickness"],
                 Stroke = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ReferenceShapeSolidColorBrush"]
             };
             SetReferenceEllipseSizePosition(circle.Radius, circle.Center);
         }
 
         public override IGraphic Graphic => Circle;
-        public override Shape ReferenceShape => refEllipse;
+        public override Shape ReferenceShape => _refEllipse;
+        public override bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                _isSelected = value;
+                if (IsSelected)
+                {
+                    _refEllipse.Stroke = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ReferenceShapeHighlightSolidColorBrush"];
+                    _refEllipse.StrokeThickness = (double)Application.Current.Resources["ReferenceShapeHighlightStrokeThickness"];
+                }
+                else
+                {
+                    _refEllipse.Stroke = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ReferenceShapeSolidColorBrush"];
+                    _refEllipse.StrokeThickness = (double)Application.Current.Resources["ReferenceShapeStrokeThickness"];
+                }
+            }
+        }
         public CircleBase Circle { get; }
 
         public Point Center
@@ -46,11 +64,12 @@ namespace DL444.Plotter.App.ViewModels
 
         private void SetReferenceEllipseSizePosition(int radius, Point center)
         {
-            refEllipse.Width = radius * 2;
-            refEllipse.Height = radius * 2;
-            refEllipse.Margin = new Thickness(center.X - radius, Circle.VerticalResolution - center.Y - radius - 1, 0, 0);
+            _refEllipse.Width = radius * 2;
+            _refEllipse.Height = radius * 2;
+            _refEllipse.Margin = new Thickness(center.X - radius, Circle.VerticalResolution - center.Y - radius - 1, 0, 0);
         }
 
-        private Ellipse refEllipse;
+        private Ellipse _refEllipse;
+        private bool _isSelected;
     }
 }

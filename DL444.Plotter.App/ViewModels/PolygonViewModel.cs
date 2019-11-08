@@ -12,9 +12,9 @@ namespace DL444.Plotter.App.ViewModels
         public PolygonViewModel(PolygonBase polygon)
         {
             Polygon = polygon;
-            refPolygon = new Polygon()
+            _refPolygon = new Polygon()
             {
-                StrokeThickness = 0.1,
+                StrokeThickness = (double)Application.Current.Resources["ReferenceShapeStrokeThickness"],
                 Stroke = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ReferenceShapeSolidColorBrush"],
                 Points = new Windows.UI.Xaml.Media.PointCollection()
             };
@@ -25,7 +25,25 @@ namespace DL444.Plotter.App.ViewModels
         }
 
         public override IGraphic Graphic => Polygon;
-        public override Shape ReferenceShape => refPolygon;
+        public override Shape ReferenceShape => _refPolygon;
+        public override bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                _isSelected = value;
+                if (IsSelected)
+                {
+                    _refPolygon.Stroke = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ReferenceShapeHighlightSolidColorBrush"];
+                    _refPolygon.StrokeThickness = (double)Application.Current.Resources["ReferenceShapeHighlightStrokeThickness"];
+                }
+                else
+                {
+                    _refPolygon.Stroke = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ReferenceShapeSolidColorBrush"];
+                    _refPolygon.StrokeThickness = (double)Application.Current.Resources["ReferenceShapeStrokeThickness"];
+                }
+            }
+        }
         public PolygonBase Polygon { get; }
 
         #region IList Implementation
@@ -45,7 +63,7 @@ namespace DL444.Plotter.App.ViewModels
             ((IList<Point>)Polygon).Insert(index, item);
             NotifyPropertyChanged(nameof(Graphic));
             NotifyPropertyChanged(nameof(Count));
-            refPolygon.Points.Add(GetFrameworkPoint(CoordinateHelper.GetMirroredPoint(item, Graphic.VerticalResolution)));
+            _refPolygon.Points.Add(GetFrameworkPoint(CoordinateHelper.GetMirroredPoint(item, Graphic.VerticalResolution)));
             NotifyPropertyChanged(nameof(ReferenceShape));
         }
 
@@ -54,7 +72,7 @@ namespace DL444.Plotter.App.ViewModels
             ((IList<Point>)Polygon).RemoveAt(index);
             NotifyPropertyChanged(nameof(Graphic));
             NotifyPropertyChanged(nameof(Count));
-            refPolygon.Points.RemoveAt(index);
+            _refPolygon.Points.RemoveAt(index);
             NotifyPropertyChanged(nameof(ReferenceShape));
         }
 
@@ -63,7 +81,7 @@ namespace DL444.Plotter.App.ViewModels
             ((IList<Point>)Polygon).Add(item);
             NotifyPropertyChanged(nameof(Graphic));
             NotifyPropertyChanged(nameof(Count));
-            refPolygon.Points.Add(GetFrameworkPoint(CoordinateHelper.GetMirroredPoint(item, Graphic.VerticalResolution)));
+            _refPolygon.Points.Add(GetFrameworkPoint(CoordinateHelper.GetMirroredPoint(item, Graphic.VerticalResolution)));
             NotifyPropertyChanged(nameof(ReferenceShape));
         }
 
@@ -72,7 +90,7 @@ namespace DL444.Plotter.App.ViewModels
             ((IList<Point>)Polygon).Clear();
             NotifyPropertyChanged(nameof(Graphic));
             NotifyPropertyChanged(nameof(Count));
-            refPolygon.Points.Clear();
+            _refPolygon.Points.Clear();
             NotifyPropertyChanged(nameof(ReferenceShape));
         }
 
@@ -94,8 +112,8 @@ namespace DL444.Plotter.App.ViewModels
                 NotifyPropertyChanged(nameof(Graphic));
                 NotifyPropertyChanged(nameof(Count));
                 var y = CoordinateHelper.GetMirroredY(item.Y, Graphic.VerticalResolution);
-                var refItem = refPolygon.Points.First(x => x.X == item.X && x.Y == y);
-                refPolygon.Points.Remove(refItem);
+                var refItem = _refPolygon.Points.First(x => x.X == item.X && x.Y == y);
+                _refPolygon.Points.Remove(refItem);
                 NotifyPropertyChanged(nameof(ReferenceShape));
             }
             return result;
@@ -117,6 +135,7 @@ namespace DL444.Plotter.App.ViewModels
             return new Windows.Foundation.Point(point.X, point.Y);
         }
 
-        private Polygon refPolygon;
+        private Polygon _refPolygon;
+        private bool _isSelected;
     }
 }

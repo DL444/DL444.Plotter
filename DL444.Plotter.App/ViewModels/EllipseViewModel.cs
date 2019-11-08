@@ -9,16 +9,34 @@ namespace DL444.Plotter.App.ViewModels
         public EllipseViewModel(EllipseBase ellipse)
         {
             Ellipse = ellipse;
-            refEllipse = new Ellipse()
+            _refEllipse = new Ellipse()
             {
-                StrokeThickness = 0.1,
-                Stroke = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ReferenceShapeSolidColorBrush"]
+                Stroke = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ReferenceShapeSolidColorBrush"],
+                StrokeThickness = (double)Application.Current.Resources["ReferenceShapeStrokeThickness"]
             };
             SetReferenceEllipseSizePosition(Ellipse.A, Ellipse.B, Ellipse.Center);
         }
 
         public override IGraphic Graphic => Ellipse;
-        public override Shape ReferenceShape => refEllipse;
+        public override Shape ReferenceShape => _refEllipse;
+        public override bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                _isSelected = value;
+                if (IsSelected)
+                {
+                    _refEllipse.Stroke = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ReferenceShapeHighlightSolidColorBrush"];
+                    _refEllipse.StrokeThickness = (double)Application.Current.Resources["ReferenceShapeHighlightStrokeThickness"];
+                }
+                else
+                {
+                    _refEllipse.Stroke = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ReferenceShapeSolidColorBrush"];
+                    _refEllipse.StrokeThickness = (double)Application.Current.Resources["ReferenceShapeStrokeThickness"];
+                }
+            }
+        }
         public EllipseBase Ellipse { get; }
 
         public int A
@@ -57,11 +75,12 @@ namespace DL444.Plotter.App.ViewModels
 
         private void SetReferenceEllipseSizePosition(int a, int b, Point center)
         {
-            refEllipse.Width = a * 2;
-            refEllipse.Height = b * 2;
-            refEllipse.Margin = new Thickness(center.X - a, Ellipse.VerticalResolution - center.Y - b - 1, 0, 0);
+            _refEllipse.Width = a * 2;
+            _refEllipse.Height = b * 2;
+            _refEllipse.Margin = new Thickness(center.X - a, Ellipse.VerticalResolution - center.Y - b - 1, 0, 0);
         }
 
-        private Ellipse refEllipse;
+        private Ellipse _refEllipse;
+        private bool _isSelected;
     }
 }

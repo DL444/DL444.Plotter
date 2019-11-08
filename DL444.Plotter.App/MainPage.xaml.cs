@@ -1,9 +1,11 @@
 ﻿using DL444.Plotter.App.ViewModels;
+using DL444.Plotter.Library;
 using System;
 using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -30,6 +32,22 @@ namespace DL444.Plotter.App
             {
                 _appState = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AppState)));
+            }
+        }
+        private ViewModelBase SelectedShape
+        {
+            get => _selectedShape;
+            set
+            {
+                if (SelectedShape != null)
+                {
+                    SelectedShape.IsSelected = false;
+                }
+                _selectedShape = value;
+                if (SelectedShape != null)
+                {
+                    SelectedShape.IsSelected = true;
+                }
             }
         }
 
@@ -88,12 +106,25 @@ namespace DL444.Plotter.App
         {
             AppState = AppState.Undo();
         }
+        private void ShapeList_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var vm = (ViewModelBase)e.ClickedItem;
+            if (SelectedShape == vm)
+            {
+                SelectedShape = null;
+            }
+            else
+            {
+                SelectedShape = vm;
+            }
+        }
 
         private IAppState _appState;
+        private ViewModelBase _selectedShape;
         private GraphicFactory factory;
     }
 
-    public class GraphicDataTemplateSelector : DataTemplateSelector
+    internal class GraphicDataTemplateSelector : DataTemplateSelector
     {
         protected override DataTemplate SelectTemplateCore(object item)
         {
@@ -119,7 +150,7 @@ namespace DL444.Plotter.App
             return (DataTemplate)page.Resources[key];
         }
     }
-    public class BooleanInvertConverter : IValueConverter
+    internal class BooleanInvertConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
