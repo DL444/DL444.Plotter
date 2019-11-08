@@ -305,7 +305,7 @@ namespace DL444.Plotter.App
         public AddEllipseState(GridCanvas canvas, GraphicType type, GraphicFactory factory)
         {
             this.canvas = canvas;
-            previewEllipse = new Ellipse()
+            previewShape = new Ellipse()
             {
                 StrokeThickness = 0.1,
                 Stroke = (Brush)Application.Current.Resources["PreviewShapeColorBrush"],
@@ -341,34 +341,9 @@ namespace DL444.Plotter.App
         public Visibility UndoButtonVisibility => Visibility.Visible;
         public bool CanUndo => centerSet || aSet;
 
-        public Point Center
-        {
-            get => center;
-            private set
-            {
-                center = value;
-                SetPreviewEllipseSizePosition(A, B, Center);
-            }
-        }
-        public int A
-        {
-            get => a;
-            private set
-            {
-                a = value;
-                SetPreviewEllipseSizePosition(A, B, Center);
-            }
-        }
-        public int B
-        {
-            get => b;
-            private set
-            {
-                b = value;
-                SetPreviewEllipseSizePosition(A, B, Center);
-            }
-        }
-
+        public Point Center { get; private set; }
+        public int A { get; private set; }
+        public int B { get; private set; }
 
         public IAppState Add(GraphicType type) => this;
         public IAppState Cancel()
@@ -393,6 +368,7 @@ namespace DL444.Plotter.App
             {
                 A = Math.Abs(x - Center.X);
                 aSet = true;
+                previewShapeAdded = false;
                 return this;
             }
             else
@@ -408,15 +384,38 @@ namespace DL444.Plotter.App
             if (aSet)
             {
                 B = Math.Abs(y - Center.Y);
+                if (!previewShapeAdded)
+                {
+                    previewShape = new Ellipse()
+                    {
+                        StrokeThickness = 0.1,
+                        Stroke = (Brush)Application.Current.Resources["PreviewShapeColorBrush"],
+                        StrokeDashArray = new DoubleCollection() { 8.0 },
+                    };
+                    canvas.PreviewShape = previewShape;
+                    previewShapeAdded = true;
+                }
+                SetPreviewEllipseSizePosition(A, B, Center);
             }
             else if (centerSet)
             {
                 A = Math.Abs(x - Center.X);
                 if (!previewShapeAdded)
                 {
-                    canvas.PreviewShape = previewEllipse;
+                    var mirroredY = CoordinateHelper.GetMirroredY(Center.Y, canvas.VerticalResolution);
+                    previewShape = new Line()
+                    {
+                        StrokeThickness = 0.1,
+                        Stroke = (Brush)Application.Current.Resources["PreviewShapeColorBrush"],
+                        StrokeDashArray = new DoubleCollection() { 8.0 },
+                        Y1 = mirroredY,
+                        Y2 = mirroredY,
+                    };
+                    canvas.PreviewShape = previewShape;
                     previewShapeAdded = true;
                 }
+                ((Line)previewShape).X1 = Center.X - A;
+                ((Line)previewShape).X2 = Center.X + A;
             }
             else
             {
@@ -436,25 +435,24 @@ namespace DL444.Plotter.App
             else if (centerSet)
             {
                 centerSet = false;
+                canvas.PreviewShape = null;
+                previewShapeAdded = false;
             }
             return this;
         }
 
         private void SetPreviewEllipseSizePosition(int a, int b, Point center)
         {
-            previewEllipse.Width = a * 2;
-            previewEllipse.Height = b * 2;
-            previewEllipse.Margin = new Thickness(center.X - a, canvas.VerticalResolution - center.Y - b - 1, 0, 0);
+            previewShape.Width = a * 2;
+            previewShape.Height = b * 2;
+            previewShape.Margin = new Thickness(center.X - a, canvas.VerticalResolution - center.Y - b - 1, 0, 0);
         }
 
         private GridCanvas canvas;
-        private Ellipse previewEllipse;
+        private Shape previewShape;
         private bool centerSet;
         private bool aSet;
         private bool previewShapeAdded;
-        private Point center = new Point();
-        private int a = 0;
-        private int b = 0;
         private GraphicType graphicType;
         private GraphicFactory factory;
     }
