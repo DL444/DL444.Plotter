@@ -127,18 +127,17 @@ namespace DL444.Plotter.Library
             double discriminant = 1.25 - Radius;
             while (y >= x)
             {
-                x++;
                 if (discriminant < 0.0)
                 {
-                    DrawRelativePoint(x, y);
                     discriminant += 2.0 * x + 3.0;
                 }
                 else
                 {
-                    DrawRelativePoint(x, y - 1);
                     discriminant += 2.0 * (x - y) + 5.0;
                     y--;
                 }
+                x++;
+                DrawRelativePoint(x, y);
             }
         }
     }

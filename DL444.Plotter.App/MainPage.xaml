@@ -144,9 +144,13 @@
     <Page.BottomAppBar>
         <CommandBar DefaultLabelPosition="Right" VerticalContentAlignment="Stretch" Background="{x:Bind AppState.CommandBarBrush, Mode=OneWay}">
             <CommandBar.Content>
-                <Grid VerticalAlignment="Stretch" Padding="16,0">
-                    <TextBlock Text="{x:Bind AppState.Description, Mode=OneWay}" VerticalAlignment="Center"/>
-                </Grid>
+                <ContentControl VerticalAlignment="Center" Padding="16,0" Content="{x:Bind AppState.Description, Mode=OneWay}">
+                    <ContentControl.ContentTransitions>
+                        <TransitionCollection>
+                            <EntranceThemeTransition/>
+                        </TransitionCollection>
+                    </ContentControl.ContentTransitions>
+                </ContentControl>
             </CommandBar.Content>
             <AppBarButton Icon="Add" Label="Add" Visibility="{x:Bind AppState.AddButtonVisibility, Mode=OneWay}">
                 <AppBarButton.Flyout>
